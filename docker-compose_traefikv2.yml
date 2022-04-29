@@ -1,0 +1,28 @@
+version: '3'
+services:
+  handbrake:
+    image: jlesage/handbrake
+#    ports:
+#      - "5800:5800"
+    volumes:
+      - "./handbrake/config:/config:rw"
+      - "./data:/storage:ro"
+      - "./data/watch:/watch:rw"
+      - "./data/output:/output:rw"
+      # - "/docker/appdata/handbrake:/config:rw"
+      # - "$HOME:/storage:ro"
+      # - "$HOME/HandBrake/watch:/watch:rw"
+      # - "$HOME/HandBrake/output:/output:rw"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.handrake.entrypoints=websecure"
+      - "traefik.http.routers.handrake.rule=Host(`handrake.yourdomain.org`)"
+      - "traefik.http.routers.handrake.tls.certresolver=lets-encr"
+      - "traefik.http.routers.handrake.tls.domains[0].main=handrake.yourdomain.org"
+      - "traefik.http.services.handrake_service.loadbalancer.server.port=5800" 
+      - "traefik.docker.network=outside-network"
+    networks:
+      - outside-network
+networks: 
+  outside-network:
+    external: true
